@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script is to backup docker volumes defined in sit-ds/docker-compose.yml.
+# This script is to backup docker volumes defined in dev-servers/docker-compose.yml.
 # Backup files are stored in the directory specified by the first argument
 # and hold 7 generations.
 
@@ -8,12 +8,12 @@ BACKUP_ROOT="${1:-$(cd $(dirname $0);pwd)/backup}"
 
 log() {
     echo "$1"
-    logger -i -t 'sit-ds-backup' "$1"
+    logger -i -t 'dev-servers-backup' "$1"
 }
 
 
 do_backup() {
-  readonly VOLUME_PREFIX='sit-ds_'
+  readonly VOLUME_PREFIX='dev-servers_'
   readonly BACKUP_VOLUMES=(
       "ci_data" "dbms_data" "its_data" "ldap_conf" "ldap_data" 
       "sca_data" "scm_data" "arm_data" "search_engine_data" "work_data"

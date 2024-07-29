@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script is to restore docker volumes defined in sit-ds/docker-compose.yml.
+# This script is to restore docker volumes defined in dev-servers/docker-compose.yml.
 
 if [ $# = 0 ]; then
   echo 'Retry add the full path of the backup directory to the argument.'
@@ -10,7 +10,7 @@ else
 fi
 
 do_restore() {
-  readonly VOLUME_PREFIX='sit-ds_'
+  readonly VOLUME_PREFIX='dev-servers_'
 
   for restore_file in $(ls ${BACKUP_DIR}); do
     if [ $(echo $restore_file | grep -e "${VOLUME_PREFIX}") ] && [ $(echo $restore_file | grep -e ".tar.gz") ]; then

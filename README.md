@@ -36,11 +36,11 @@ Each service has the following settings necessary for team development.
     * Settings > Advanced > Memory
   * Mac
     * Preferences > Advanced > Memory
-1. Get the resource of SIT-DS and execute each Docker Compose Service with the following command.
+1. Get the resource of dev-servers and execute each Docker Compose Service with the following command.
 
 ```
-git clone https://github.com/sitoolkit/sit-ds.git
-cd sit-ds
+git clone https://github.com/project-au-lait/dev-servers.git
+cd dev-servers
 docker-compose up -d
 ```
 
@@ -83,7 +83,7 @@ userPassword: password
 2. Execute the following command.
 
 ```
-docker cp add-users.ldif sit-ds-work-1:/tmp
+docker cp add-users.ldif dev-servers-work-1:/tmp
 docker-compose exec work ldapmod add-users.ldif
 ```
 
@@ -131,21 +131,21 @@ See http://localhost:9323 for the results of the automated test.
 ### Restore
 
 1. Execute restore.sh specifying the path of the directory that contains the backup file you want to restore.
-   Read and restore tar file of "sit-ds_" prefix of specified directory.
+   Read and restore tar file of "dev-servers_" prefix of specified directory.
 
 ```
-git clone https://github.com/sitoolkit/sit-ds.git
-cd sit-ds
+git clone https://github.com/project-au-lait/dev-servers.git
+cd dev-servers
 ./restore.sh /path/to/backup/directory/yyyymmdd_hhmmss
 docker-compose up -d
 ```
 
 ## Migration maven artifacts from Artifactory to Nexus
-sit-ds changed arm from Artifactory to Nexus.  
+dev-servers changed arm from Artifactory to Nexus.  
 Here are the steps to migrate maven artifacts from Artifactory to Nexus.
 
 > [!IMPORTANT]
-> Please take [backup](#backup) of sit-ds before working.
+> Please take [backup](#backup) of dev-servers before working.
 
 1. **Artifactory export**  
 Assume Artifactory is running.
@@ -160,18 +160,18 @@ Assume Artifactory is running.
       mkdir backup
 
       # bash
-      docker cp sit-ds-arm-1:$(docker exec -it sit-ds-arm-1 bash -c 'echo -n $(ls -rtd /tmp/export/* | tail -n 1)')/repositories backup
+      docker cp dev-servers-arm-1:$(docker exec -it dev-servers-arm-1 bash -c 'echo -n $(ls -rtd /tmp/export/* | tail -n 1)')/repositories backup
       
       # cmd
-      for /f "usebackq delims=" %A in (`docker exec -it sit-ds-arm-1 bash -c "ls -rtd /tmp/export/* | tail -n 1"`) do set EXPORT_DIR=%A
-      docker cp sit-ds-arm-1:%EXPORT_DIR%/repositories backup
+      for /f "usebackq delims=" %A in (`docker exec -it dev-servers-arm-1 bash -c "ls -rtd /tmp/export/* | tail -n 1"`) do set EXPORT_DIR=%A
+      docker cp dev-servers-arm-1:%EXPORT_DIR%/repositories backup
       ```
 
-1. **sit-ds update Artifactory → Nexus**
+1. **dev-servers update Artifactory → Nexus**
 
    ```
    docker-compose down proxy arm work --rmi local
-   docker volume rm sit-ds_arm_data
+   docker volume rm dev-servers_arm_data
    git pull
    docker-compose up -d
    ```
@@ -219,5 +219,5 @@ You may need to go through a specific version of SonarQube to upgrade.
 See link for details.
 https://docs.sonarsource.com/sonarqube/latest/setup-and-upgrade/upgrade-the-server/determine-path
 
-If you need to change the version of SonarQube in sit-ds to go through with the upgrade,  
+If you need to change the version of SonarQube in dev-servers to go through with the upgrade,  
 change the `VERSION_SCA` in the .env file.
