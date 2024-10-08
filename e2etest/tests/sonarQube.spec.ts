@@ -7,8 +7,8 @@ test('login', async ({ page, baseURL, user }) => {
 
   await page.goto('/sonarqube/sessions/new');
 
-  await page.locator('#login').fill(user.id);
-  await page.locator('#password').fill(user.password);
+  await page.locator('#login-input').fill(user.id);
+  await page.locator('#password-input').fill(user.password);
   await page.locator('#login_form').getByRole('button').click();
   await page.waitForURL(/.*(projects|account).*/);
 
@@ -17,6 +17,10 @@ test('login', async ({ page, baseURL, user }) => {
     return;
   }
 
-  await page.goto('/sonarqube/account');
-  await expect(page.locator('#login')).toHaveText(user.id);
+  await page.locator('#userAccountMenuDropdown-trigger').click();
+  await expect(
+    page
+      .locator('#userAccountMenuDropdown-dropdown')
+      .getByText(user.id, { exact: true }),
+  ).toBeVisible();
 });
