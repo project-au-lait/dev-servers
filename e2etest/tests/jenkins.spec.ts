@@ -7,5 +7,10 @@ test('login', async ({ page, user }) => {
   await page.locator('input[name="j_password"]').fill(user.password);
   await page.locator('button[name="Submit"]').click();
 
-  await expect(page.getByRole('link', { name: user.id })).toBeVisible();
+  await page.waitForURL('/jenkins/');
+  await page.locator('#root-action-UserAction').hover();
+
+  await expect(
+    page.locator('.jenkins-dropdown').getByText(user.id),
+  ).toBeVisible();
 });
