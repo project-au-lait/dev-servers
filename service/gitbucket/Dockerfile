@@ -1,4 +1,4 @@
-ARG VERSION
+ARG VERSION=latest
 FROM gitbucket/gitbucket:${VERSION}
 
 ENV GITBUCKET_HOME=/etc/gitbucket \
@@ -17,4 +17,12 @@ RUN set -eux \
 
 COPY tmpl.gitbucket.conf ${GITBUCKET_HOME}
 
-CMD dockerize -no-overwrite -template ${GITBUCKET_HOME}/tmpl.gitbucket.conf:${GITBUCKET_HOME}/gitbucket.conf -wait tcp://${DB_HOST}:${DB_PORT} -timeout 60s java -jar /opt/gitbucket.war
+ENTRYPOINT [ \
+    "sh", "-c", \
+    "dockerize \
+     -no-overwrite \
+     -template ${GITBUCKET_HOME}/tmpl.gitbucket.conf:${GITBUCKET_HOME}/gitbucket.conf \
+     -wait tcp://${DB_HOST}:${DB_PORT} \
+     -timeout 60s \
+     && exec java -jar /opt/gitbucket.war" \
+]

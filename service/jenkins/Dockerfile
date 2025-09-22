@@ -1,11 +1,11 @@
-ARG VERSION
+ARG VERSION=latest
 FROM jenkins/jenkins:${VERSION}
 
 ENV JENKINS_JAVA_OPTIONS="-Djava.awt.headless=true"
 
 ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false \
-  -Dhudson.model.DirectoryBrowserSupport.CSP=\"default-src 'self'; script-src * 'unsafe-inline'; style-src * 'unsafe-inline'; img-src *; child-src 'self'; sandbox allow-same-origin allow-scripts;  font-src *;\"" \
-  JENKINS_OPTS=--prefix=/jenkins
+    -Dhudson.model.DirectoryBrowserSupport.CSP=\"default-src 'self'; script-src * 'unsafe-inline'; style-src * 'unsafe-inline'; img-src *; child-src 'self'; sandbox allow-same-origin allow-scripts;  font-src *;\"" \
+    JENKINS_OPTS=--prefix=/jenkins
 
 ENV PLUGINS_FORCE_UPGRADE=true
 ENV TRY_UPGRADE_IF_NO_MARKER=true

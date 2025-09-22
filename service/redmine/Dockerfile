@@ -1,4 +1,4 @@
-ARG VERSION
+ARG VERSION=latest
 FROM redmine:${VERSION}
 
 ENV DOCKERIZE_VERSION=v0.6.1 \
@@ -20,4 +20,11 @@ COPY sub-uri.rb ${REDMINE_DIR}/config
 
 RUN cat ${REDMINE_DIR}/config/sub-uri.rb >> ${REDMINE_DIR}/config/environment.rb
 
-ENTRYPOINT dockerize -template ${REDMINE_DIR}/config/tmpl.configuration.yml:${REDMINE_DIR}/config/configuration.yml -wait tcp://${DB_HOST}:${DB_PORT} -timeout 60s /docker-entrypoint.sh passenger start
+ENTRYPOINT [ \
+    "sh", "-c", \
+    "dockerize \
+     -template ${REDMINE_DIR}/config/tmpl.configuration.yml:${REDMINE_DIR}/config/configuration.yml \
+     -wait tcp://${DB_HOST}:${DB_PORT} \
+     -timeout 60s \
+     && exec /docker-entrypoint.sh passenger start" \
+]

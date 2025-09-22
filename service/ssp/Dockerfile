@@ -1,4 +1,4 @@
-ARG VERSION
+ARG VERSION=latest
 FROM php:${VERSION}
 
 ENV SSP_VERSION=1.3 \
@@ -22,4 +22,9 @@ RUN set -eux \
 
 ADD tmpl.config.inc.local.php ${INST_DIR}/conf
 
-CMD dockerize -template ${INST_DIR}/conf/tmpl.config.inc.local.php:${INST_DIR}/conf/config.inc.local.php apache2-foreground
+ENTRYPOINT [ \
+    "sh", "-c", \
+    "dockerize \
+     -template ${INST_DIR}/conf/tmpl.config.inc.local.php:${INST_DIR}/conf/config.inc.local.php \
+     && exec apache2-foreground" \
+]
