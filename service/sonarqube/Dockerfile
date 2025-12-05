@@ -1,4 +1,4 @@
-ARG VERSION
+ARG VERSION=latest
 FROM sonarqube:${VERSION}
 
 ENV DOCKERIZE_VERSION=v0.6.1
@@ -19,5 +19,11 @@ WORKDIR $SONARQUBE_HOME
 COPY tmpl.sonar.properties ./conf
 RUN chmod u+w ./conf/sonar.properties
 
-ENTRYPOINT dockerize -template ./conf/tmpl.sonar.properties:./conf/sonar.properties -wait tcp://${DB_HOST}:${DB_PORT} -timeout 60s \
-    ./docker/entrypoint.sh -Dsonar.web.context=/sonarqube
+ENTRYPOINT [ \
+    "sh", "-c", \
+    "dockerize \
+     -template ./conf/tmpl.sonar.properties:./conf/sonar.properties \
+     -wait tcp://${DB_HOST}:${DB_PORT} \
+     -timeout 60s \
+     && exec ./docker/entrypoint.sh -Dsonar.web.context=/sonarqube" \
+]

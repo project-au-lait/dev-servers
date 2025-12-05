@@ -13,6 +13,8 @@ services:
     restart: always
     healthcheck:
       test: "ldapwhoami -xH ldapi:// || exit 1"
+    init: true
+    stop_grace_period: 30s
 
   ldapadmin:
     depends_on:
@@ -83,6 +85,8 @@ services:
       - dbms_data:/var/lib/postgresql/data
     healthcheck:
       test: "pg_isready -d postgres -U postgres"
+    init: true
+    stop_grace_period: 30s
 
   scm:
     env_file:
@@ -111,6 +115,8 @@ services:
       test: "curl -sf localhost:8080/signin || exit 1"
       interval: 5s
       retries: 100
+    init: true
+    stop_grace_period: 30s
 
   ci:
     build:
@@ -160,6 +166,8 @@ services:
       test: "wget localhost:9000/sonarqube/ -O /dev/null -t 1 || exit 1"
       interval: 5s
       retries: 100
+    init: true
+    stop_grace_period: 30s
 
   its:
     build:
@@ -190,6 +198,8 @@ services:
       test: "wget localhost:3000/redmine -O /dev/null -t 1 || exit 1"
       interval: 5s
       retries: 100
+    init: true
+    stop_grace_period: 30s
 
   arm:
     image: sonatype/nexus3:${VERSION_ARM}
@@ -204,15 +214,19 @@ services:
       - ${NEXUS_DOCKER_PORT}:${NEXUS_DOCKER_PORT}
     volumes:
       - arm_data:/nexus-data
-    entrypoint: >
-      bash -c 
-      "echo -n ${LDAP_MANAGER_PASSWORD} > /nexus-data/admin.password &&
-      /opt/sonatype/nexus/bin/nexus run"
+    entrypoint:
+      - sh
+      - -c
+      - |
+        echo -n ${LDAP_MANAGER_PASSWORD} > /nexus-data/admin.password \
+        && exec /opt/sonatype/nexus/bin/nexus run
     restart: always
     healthcheck:
       test: "curl -sf localhost:8081 || exit 1"
       interval: 5s
       retries: 100
+    init: true
+    stop_grace_period: 30s
 
   proxy:
     build:
@@ -224,6 +238,8 @@ services:
     ports:
       - ${PROXY_PORT}:${PROXY_PORT}
     restart: always
+    init: true
+    stop_grace_period: 30s
 
   work:
     build:
@@ -255,6 +271,8 @@ services:
     extra_hosts:
       - wiki.localhost:127.0.0.1
     restart: always
+    init: true
+    stop_grace_period: 30s
 
   wiki:
     env_file:
@@ -286,17 +304,22 @@ services:
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
     volumes:
       - search_engine_data:/usr/share/elasticsearch/data
-    entrypoint: >
-      bash -c "
+    entrypoint:
+      - sh
+      - -c
+      - |
         { 
-          if [ -z $(elasticsearch-plugin list) ]; then 
+          if [ -z "$(elasticsearch-plugin list)" ]; then 
             elasticsearch-plugin install analysis-kuromoji
           fi
-        } && docker-entrypoint.sh"
+        } \
+        && exec docker-entrypoint.sh
     healthcheck:
       test: "curl -sf localhost:9200 || exit 1"
       interval: 5s
       retries: 100
+    init: true
+    stop_grace_period: 30s
 
 volumes:
   ci_data:
