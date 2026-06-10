@@ -42,6 +42,7 @@ services:
       test: "echo | openssl s_client -verify_quiet -connect localhost:${SMTP_PORT} -starttls smtp 2>/dev/null || exit 1"
 
   passchg:
+    platform: linux/amd64
     build:
       context: ./service/ssp
       args:
@@ -89,6 +90,7 @@ services:
     stop_grace_period: 30s
 
   scm:
+    platform: linux/amd64
     env_file:
       - .env
     build:
@@ -143,6 +145,7 @@ services:
       retries: 100
 
   sca:
+    platform: linux/amd64
     build:
       context: ./service/sonarqube
       args:
@@ -170,6 +173,7 @@ services:
     stop_grace_period: 30s
 
   its:
+    platform: linux/amd64
     build:
       context: ./service/redmine
       args:
@@ -229,6 +233,7 @@ services:
     stop_grace_period: 30s
 
   proxy:
+    platform: linux/amd64
     build:
       context: ./service/nginx
       args:
@@ -242,6 +247,7 @@ services:
     stop_grace_period: 30s
 
   work:
+    platform: linux/amd64
     build:
       context: ./service/work
       args:
