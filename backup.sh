@@ -31,10 +31,10 @@ do_backup() {
       -v ${volume_name}:/target \
       -v ${LOCAL_BACKUP_DIR}:/backup \
       ubuntu \
-      tar cfz /backup/${volume_name}.tar.gz -C /target .
+      tar cfz /backup/${volume_name}.tar.gz -C /target . || return 1
   done
   
-  echo ${COMMIT_ID} > ${COMMIT_ID_FILE}
+  echo ${COMMIT_ID} > ${COMMIT_ID_FILE} || return 1
 
   log "End all backup in ${LOCAL_BACKUP_DIR} $(ls -hkl ${LOCAL_BACKUP_DIR})"
 }
@@ -67,6 +67,10 @@ if [[ ! -e ${BACKUP_ROOT} ]]; then
 fi
 
 docker-compose stop
-do_backup
-delete_old_backup
+if do_backup; then
+  delete_old_backup
+else
+  log "Backup failed. Deleting incomplete backup directory: ${LOCAL_BACKUP_DIR}"
+  rm -rf "${LOCAL_BACKUP_DIR}"
+fi
 docker-compose start
